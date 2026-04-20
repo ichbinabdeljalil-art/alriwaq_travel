@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a3d62">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حاسبة برامج وكالة الأسفار</title>
@@ -53,6 +55,25 @@
         }
     </style>
 </head>
+const CACHE_NAME = "riwaq-cache-v1";
+const urlsToCache = [
+  "/alriwaq_travel/",
+  "/alriwaq_travel/index.html"
+];
+
+self.addEventListener("install", event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(urlsToCache))
+  );
+});
+
+self.addEventListener("fetch", event => {
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => response || fetch(event.request))
+  );
+});
 <body class="bg-gray-100 min-h-screen py-8 px-4 sm:px-6 lg:px-8 flex justify-center items-center">
 
     <div class="max-w-4xl w-full bg-white rounded-2xl shadow-xl overflow-hidden">
