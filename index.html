@@ -1,1 +1,313 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة برامج وكالة الأسفار</title>
+    
+    <!-- استدعاء خط Cairo للغة العربية -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- استدعاء مكتبة الأيقونات FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- استدعاء Tailwind CSS للتصميم -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- إعدادات ألوان مخصصة لـ Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#0284c7', // أزرق مريح
+                        secondary: '#0d9488', // أخضر مائل للأزرق
+                        accent: '#f59e0b', // برتقالي
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* إخفاء أسهم الأرقام في حقول الإدخال */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        
+        /* تأثيرات حركية بسيطة */
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen py-8 px-4 sm:px-6 lg:px-8 flex justify-center items-center">
 
+    <div class="max-w-4xl w-full bg-white rounded-2xl shadow-xl overflow-hidden">
+        
+        <!-- الترويسة (Header) -->
+        <div class="bg-gradient-to-r from-primary to-secondary p-6 text-white text-center">
+            <i class="fa-solid fa-calculator text-4xl mb-3"></i>
+            <h1 class="text-3xl font-bold">حاسبة تكلفة البرنامج السياحي</h1>
+            <p class="text-white/80 mt-2 text-sm">حساب التكلفة بدقة شاملة هامش الخطأ (5%) وهامش الربح (20%)</p>
+        </div>
+
+        <div class="p-6 sm:p-8">
+            <form id="calculatorForm" onsubmit="event.preventDefault(); calculate();">
+                
+                <!-- رسالة الخطأ -->
+                <div id="errorMessage" class="hidden mb-6 bg-red-50 border-r-4 border-red-500 text-red-700 p-4 rounded-md fade-in flex items-center">
+                    <i class="fa-solid fa-triangle-exclamation text-xl ml-3"></i>
+                    <div>
+                        <p class="font-bold">تنبيه!</p>
+                        <p id="errorText" class="text-sm">عذراً، التسكين الخماسي مسموح فقط في فنادق 2 أو 3 نجوم.</p>
+                    </div>
+                </div>
+
+                <!-- قسم الفنادق -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    
+                    <!-- فندق المدينة -->
+                    <div class="bg-gray-50 p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                        <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                            <i class="fa-solid fa-hotel text-primary ml-2"></i> فندق المدينة
+                        </h2>
+                        
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold text-gray-600 mb-2">تصنيف الفندق (نجوم)</label>
+                            <select id="madinahStars" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" onchange="hideError()">
+                                <option value="2">⭐⭐ (نجمتين)</option>
+                                <option value="3" selected>⭐⭐⭐ (3 نجوم)</option>
+                                <option value="4">⭐⭐⭐⭐ (4 نجوم)</option>
+                                <option value="5">⭐⭐⭐⭐⭐ (5 نجوم)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-600 mb-2">عدد الأيام</label>
+                                <input type="number" id="madinahDays" min="0" placeholder="مثال: 4" value="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" oninput="hideError()">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-600 mb-2">سعر الليلة</label>
+                                <input type="number" id="madinahPrice" min="0" placeholder="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" oninput="hideError()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- فندق مكة -->
+                    <div class="bg-gray-50 p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                        <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                            <i class="fa-solid fa-kaaba text-primary ml-2"></i> فندق مكة
+                        </h2>
+                        
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold text-gray-600 mb-2">تصنيف الفندق (نجوم)</label>
+                            <select id="makkahStars" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" onchange="hideError()">
+                                <option value="2">⭐⭐ (نجمتين)</option>
+                                <option value="3" selected>⭐⭐⭐ (3 نجوم)</option>
+                                <option value="4">⭐⭐⭐⭐ (4 نجوم)</option>
+                                <option value="5">⭐⭐⭐⭐⭐ (5 نجوم)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-600 mb-2">عدد الأيام</label>
+                                <input type="number" id="makkahDays" min="0" placeholder="مثال: 5" value="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" oninput="hideError()">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-600 mb-2">سعر الليلة</label>
+                                <input type="number" id="makkahPrice" min="0" placeholder="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" oninput="hideError()">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- قسم الخدمات والتسكين -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    
+                    <!-- التأشيرة -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-800 mb-2 flex items-center">
+                            <i class="fa-solid fa-passport text-secondary ml-2"></i> سعر التأشيرة
+                        </label>
+                        <input type="number" id="visaPrice" min="0" placeholder="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary outline-none transition-all">
+                    </div>
+
+                    <!-- الطيران -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-800 mb-2 flex items-center">
+                            <i class="fa-solid fa-plane text-secondary ml-2"></i> سعر الطائرة
+                        </label>
+                        <input type="number" id="flightPrice" min="0" placeholder="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary outline-none transition-all">
+                    </div>
+
+                    <!-- نوع التسكين -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-800 mb-2 flex items-center">
+                            <i class="fa-solid fa-users text-secondary ml-2"></i> نوع التسكين
+                        </label>
+                        <select id="roomType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary outline-none transition-all" onchange="hideError()">
+                            <option value="2">ثنائي (شخصين)</option>
+                            <option value="3">ثلاثي (3 أشخاص)</option>
+                            <option value="4" selected>رباعي (4 أشخاص)</option>
+                            <option value="5">خماسي (5 أشخاص)</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <!-- أزرار التحكم -->
+                <div class="flex gap-4 border-t border-gray-200 pt-6">
+                    <button type="submit" class="flex-1 bg-primary hover:bg-sky-700 text-white font-bold py-3 px-4 rounded-xl transition-colors duration-200 flex justify-center items-center text-lg shadow-md">
+                        <i class="fa-solid fa-calculator ml-2"></i> احسب التكلفة النهائية
+                    </button>
+                    <button type="button" onclick="resetApp()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-6 rounded-xl transition-colors duration-200 flex justify-center items-center shadow-sm">
+                        <i class="fa-solid fa-rotate-right ml-2"></i> إعادة تعيين
+                    </button>
+                </div>
+            </form>
+
+            <!-- قسم النتائج (مخفي افتراضياً) -->
+            <div id="resultsSection" class="hidden mt-8 pt-8 border-t-2 border-dashed border-gray-200 fade-in">
+                <h3 class="text-2xl font-bold text-center text-gray-800 mb-6">تفاصيل التكلفة للفرد الواحد</h3>
+                
+                <!-- الصف الأول: التفاصيل الأساسية وهامش الخطأ -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    
+                    <!-- تكلفة الفنادق -->
+                    <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 text-center">
+                        <p class="text-sm text-gray-600 font-semibold mb-1">تكلفة الفنادق للفرد</p>
+                        <p class="text-xl font-bold text-blue-700" id="resHotelPP">0.00</p>
+                    </div>
+
+                    <!-- المجموع الأساسي -->
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-center">
+                        <p class="text-sm text-gray-600 font-semibold mb-1">التكلفة الأساسية (قبل الهوامش)</p>
+                        <p class="text-xl font-bold text-gray-700" id="resBaseTotal">0.00</p>
+                    </div>
+
+                    <!-- التكلفة مع هامش الخطأ -->
+                    <div class="bg-orange-50 border border-orange-200 rounded-xl p-4 text-center">
+                        <p class="text-sm text-orange-800 font-semibold mb-1">بعد إضافة هامش الخطأ (+5%)</p>
+                        <p class="text-xl font-bold text-orange-600" id="resWithErrorMargin">0.00</p>
+                    </div>
+
+                </div>
+
+                <!-- الصف الثاني: السعر النهائي مع الربح -->
+                <div class="bg-green-50 border-2 border-green-400 rounded-xl p-6 text-center shadow-lg relative overflow-hidden">
+                    <!-- أيقونة خلفية لتجميل البطاقة -->
+                    <i class="fa-solid fa-sack-dollar absolute -left-4 -top-4 text-green-200 text-8xl opacity-30 transform -rotate-12"></i>
+                    
+                    <div class="relative z-10">
+                        <p class="text-md text-green-800 font-bold mb-2">
+                            <i class="fa-solid fa-tags ml-1"></i> سعر البيع النهائي (شامل 20% ربح)
+                        </p>
+                        <p class="text-4xl font-black text-green-700 tracking-wide" id="resFinalSellingPrice">0.00</p>
+                        <p class="text-xs text-green-600 mt-2">السعر المحسوب = (التكلفة + 5% هامش خطأ) + 20% هامش ربح</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- كود الجافاسكربت -->
+    <script>
+        // دالة لتنسيق الأرقام بفاصلة للآلاف
+        const formatCurrency = (num) => {
+            return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        };
+
+        // إخفاء رسالة الخطأ عند تغيير أي مدخل
+        const hideError = () => {
+            document.getElementById('errorMessage').classList.add('hidden');
+        };
+
+        // دالة الحساب الرئيسية
+        const calculate = () => {
+            // 1. جلب القيم من الحقول
+            const madinahStars = parseInt(document.getElementById('madinahStars').value);
+            const makkahStars = parseInt(document.getElementById('makkahStars').value);
+            const roomType = parseInt(document.getElementById('roomType').value);
+            
+            const madinahDays = parseFloat(document.getElementById('madinahDays').value) || 0;
+            const madinahPrice = parseFloat(document.getElementById('madinahPrice').value) || 0;
+            
+            const makkahDays = parseFloat(document.getElementById('makkahDays').value) || 0;
+            const makkahPrice = parseFloat(document.getElementById('makkahPrice').value) || 0;
+            
+            const visaPrice = parseFloat(document.getElementById('visaPrice').value) || 0;
+            const flightPrice = parseFloat(document.getElementById('flightPrice').value) || 0;
+
+            const errorDiv = document.getElementById('errorMessage');
+            const resultsDiv = document.getElementById('resultsSection');
+
+            // 2. التحقق من الشروط (Validation)
+            if (roomType === 5) {
+                if (madinahStars > 3 || makkahStars > 3) {
+                    errorDiv.classList.remove('hidden');
+                    resultsDiv.classList.add('hidden');
+                    errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return; 
+                }
+            }
+            errorDiv.classList.add('hidden');
+
+            // 3. العمليات الحسابية
+            // إجمالي كل فندق
+            const totalMadinahCost = madinahPrice * madinahDays;
+            const totalMakkahCost = makkahPrice * makkahDays;
+            
+            // تكلفة الفنادق للفرد
+            const hotelCostPerPerson = (totalMadinahCost + totalMakkahCost) / roomType;
+            
+            // التكلفة الأساسية الإجمالية (بدون أي هوامش)
+            const baseTotal = hotelCostPerPerson + visaPrice + flightPrice;
+            
+            // إضافة 5% هامش خطأ (طوارئ)
+            const totalWithErrorMargin = baseTotal * 1.05; 
+            
+            // إضافة 20% هامش ربح على الإجمالي الجديد
+            const finalSellingPrice = totalWithErrorMargin * 1.20; 
+
+            // 4. عرض النتائج
+            document.getElementById('resHotelPP').innerText = formatCurrency(hotelCostPerPerson);
+            document.getElementById('resBaseTotal').innerText = formatCurrency(baseTotal);
+            document.getElementById('resWithErrorMargin').innerText = formatCurrency(totalWithErrorMargin);
+            document.getElementById('resFinalSellingPrice').innerText = formatCurrency(finalSellingPrice);
+
+            // إظهار النتائج
+            resultsDiv.classList.remove('hidden');
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        };
+
+        // دالة إعادة التعيين (Reset)
+        const resetApp = () => {
+            document.getElementById('calculatorForm').reset();
+            document.getElementById('errorMessage').classList.add('hidden');
+            document.getElementById('resultsSection').classList.add('hidden');
+            
+            document.getElementById('madinahDays').value = 1;
+            document.getElementById('makkahDays').value = 1;
+            
+            document.getElementById('madinahDays').focus();
+        };
+    </script>
+</body>
+</html>
