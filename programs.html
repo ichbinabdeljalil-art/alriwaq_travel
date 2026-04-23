@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="برامج سفر الرواق - اختر شهرك وانطلق في رحلة لا تُنسى">
+  <title>برامجنا — الرواق للسفر</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- PAGE LOADER -->
+<div id="page-loader">
+  <div class="loader-content">
+    <div class="loader-logo">✈ الرواق</div>
+    <div class="loader-spinner"></div>
+  </div>
+</div>
+
+<!-- NAVIGATION -->
+<nav class="navbar scrolled" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-icon">ر</div>
+      <div class="logo-text">
+        <span class="logo-main">الرواق للسفر</span>
+        <span class="logo-sub">وكالة أسفار احترافية</span>
+      </div>
+    </a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">الرئيسية</a></li>
+      <li><a href="programs.html" class="active">برامجنا</a></li>
+      <li><a href="videos.html">فيديوات</a></li>
+      <li><a href="branches.html">فروعنا</a></li>
+      <li><a href="contact.html" class="nav-cta">تواصل معنا</a></li>
+    </ul>
+    <button class="nav-toggle" id="nav-toggle" aria-label="القائمة">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="container">
+    <h1>برامج <span>السفر والسياحة</span></h1>
+    <p>اختر الشهر المناسب واحجز رحلتك بكل سهولة</p>
+  </div>
+</div>
+
+<!-- PROGRAMS SECTION -->
+<section style="background:var(--off-white); padding:60px 0 80px;">
+  <div class="container">
+
+    <!-- ── Step Indicator ── -->
+    <div class="step-indicator" id="step-indicator">
+      <div class="step active" id="step-1">
+        <div class="step-number">1</div>
+        <div class="step-label">اختر الشهر</div>
+      </div>
+      <div class="step-line" id="line-1"></div>
+      <div class="step" id="step-2">
+        <div class="step-number">2</div>
+        <div class="step-label">نوع الرحلة</div>
+      </div>
+      <div class="step-line" id="line-2"></div>
+      <div class="step" id="step-3">
+        <div class="step-number">3</div>
+        <div class="step-label">تفاصيل الحجز</div>
+      </div>
+    </div>
+
+    <!-- ── STEP 1: Month Selection ── -->
+    <div id="months-section">
+      <div class="section-header animate-on-scroll">
+        <h2 class="section-title">اختر <span>شهر سفرك</span></h2>
+        <div class="divider"></div>
+        <p class="section-subtitle">انقر على الشهر الذي تريد السفر فيه للمتابعة</p>
+      </div>
+      <!-- Month cards rendered by programs.js -->
+      <div class="months-grid" id="months-grid"></div>
+    </div>
+
+    <!-- ── STEP 2: Trip Type ── -->
+    <div class="trip-type-section" id="trip-type-section">
+      <div class="section-header">
+        <h2 class="section-title">نوع <span>الرحلة</span></h2>
+        <div class="divider"></div>
+        <p class="section-subtitle" id="trip-subtitle">اختر نوع الرحلة المناسب لك</p>
+      </div>
+
+      <div class="trip-type-grid">
+        <div class="trip-type-card" id="card-individual" onclick="selectTripType('فردي')">
+          <span class="trip-type-icon">🧳</span>
+          <div class="trip-type-title">رحلة فردية</div>
+          <div class="trip-type-desc">للمسافر الفرد أو رحلات العمل</div>
+        </div>
+        <div class="trip-type-card" id="card-family" onclick="selectTripType('عائلي')">
+          <span class="trip-type-icon">👨‍👩‍👧‍👦</span>
+          <div class="trip-type-title">رحلة عائلية</div>
+          <div class="trip-type-desc">للعائلات والمجموعات</div>
+        </div>
+      </div>
+
+      <div style="text-align:center; margin-top:28px;">
+        <button class="btn-back" onclick="goBack(1)">← العودة لاختيار الشهر</button>
+      </div>
+    </div>
+
+    <!-- ── STEP 3: Booking Form ── -->
+    <div class="booking-form-section" id="booking-form-section">
+      <div class="form-card">
+
+        <!-- Header summary -->
+        <div class="form-card-header">
+          <h3 style="font-size:1.45rem; font-weight:800; color:var(--text-dark);">📋 تفاصيل الحجز</h3>
+          <div class="booking-summary" id="booking-summary">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Success message (shown after submit) -->
+        <div class="success-message" id="success-message">
+          <div class="success-icon">✓</div>
+          <h3>تم إرسال طلبك بنجاح! 🎉</h3>
+          <p>شكراً لك، سيتواصل معك فريق الرواق في أقرب وقت ممكن على رقم هاتفك.</p>
+          <button class="btn-primary" onclick="resetAll()" style="margin-top:8px;">حجز رحلة أخرى</button>
+        </div>
+
+        <!-- Booking form -->
+        <form id="booking-form" novalidate>
+          <div class="form-grid">
+
+            <!-- Full name -->
+            <div class="form-group">
+              <label class="form-label required" for="full-name">الإسم الكامل</label>
+              <input type="text" id="full-name" name="full_name" class="form-control"
+                     placeholder="أدخل اسمك الكامل" required autocomplete="name">
+            </div>
+
+            <!-- Phone -->
+            <div class="form-group">
+              <label class="form-label required" for="phone">رقم الهاتف</label>
+              <input type="tel" id="phone" name="phone" class="form-control"
+                     placeholder="06XXXXXXXX" required dir="ltr" autocomplete="tel">
+            </div>
+
+            <!-- Accommodation type -->
+            <div class="form-group full-width">
+              <label class="form-label required">نوع التسكين</label>
+              <div class="radio-group">
+                <input type="radio" name="accommodation" id="acc-5" value="خماسي (5 أشخاص)" class="radio-option">
+                <label for="acc-5" class="radio-label">خماسي</label>
+
+                <input type="radio" name="accommodation" id="acc-4" value="رباعي (4 أشخاص)" class="radio-option">
+                <label for="acc-4" class="radio-label">رباعي</label>
+
+                <input type="radio" name="accommodation" id="acc-3" value="ثلاثي (3 أشخاص)" class="radio-option">
+                <label for="acc-3" class="radio-label">ثلاثي</label>
+
+                <input type="radio" name="accommodation" id="acc-2" value="ثنائي (2 أشخاص)" class="radio-option">
+                <label for="acc-2" class="radio-label">ثنائي</label>
+              </div>
+            </div>
+
+            <!-- Hotel stars -->
+            <div class="form-group full-width">
+              <label class="form-label required">تصنيف الفندق</label>
+              <div class="stars-group">
+                <input type="radio" name="hotel_stars" id="stars-2" value="⭐⭐ نجمتان" class="radio-option">
+                <label for="stars-2" class="stars-label">⭐⭐ نجمتان</label>
+
+                <input type="radio" name="hotel_stars" id="stars-3" value="⭐⭐⭐ ثلاث نجوم" class="radio-option">
+                <label for="stars-3" class="stars-label">⭐⭐⭐ ثلاث نجوم</label>
+
+                <input type="radio" name="hotel_stars" id="stars-4" value="⭐⭐⭐⭐ أربع نجوم" class="radio-option">
+                <label for="stars-4" class="stars-label">⭐⭐⭐⭐ أربع نجوم</label>
+
+                <input type="radio" name="hotel_stars" id="stars-5" value="⭐⭐⭐⭐⭐ خمس نجوم" class="radio-option">
+                <label for="stars-5" class="stars-label">⭐⭐⭐⭐⭐ خمس نجوم</label>
+              </div>
+            </div>
+
+            <!-- City -->
+            <div class="form-group full-width">
+              <label class="form-label required" for="city">المدينة</label>
+              <input type="text" id="city" name="city" class="form-control"
+                     placeholder="أدخل اسم مدينتك" required autocomplete="address-level2">
+            </div>
+
+            <!-- Notes -->
+            <div class="form-group full-width">
+              <label class="form-label" for="notes">ملاحظات إضافية</label>
+              <textarea id="notes" name="notes" class="form-control"
+                        placeholder="أضف أي ملاحظات أو متطلبات خاصة..."></textarea>
+            </div>
+
+          </div><!-- /form-grid -->
+
+          <!-- Error message -->
+          <div id="form-error" style="display:none; background:#fff5f5; border:1px solid #fc8181; color:#c53030; padding:12px 16px; border-radius:8px; margin-top:16px; font-size:0.9rem; text-align:center;"></div>
+
+          <div class="form-submit">
+            <button type="submit" class="btn-submit" id="submit-btn">
+              <span id="btn-text">📤 إرسال الطلب</span>
+            </button>
+            <p class="form-hint">سيتم إرسال طلبك مباشرة إلى فريق الرواق للسفر عبر Telegram</p>
+          </div>
+        </form><!-- /booking-form -->
+
+        <div style="text-align:center; margin-top:20px; padding-top:18px; border-top:1px solid var(--gray-200);">
+          <button class="btn-back" onclick="goBack(2)">← العودة لاختيار نوع الرحلة</button>
+        </div>
+
+      </div><!-- /form-card -->
+    </div><!-- /booking-form-section -->
+
+  </div><!-- /container -->
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-bottom" style="justify-content:center; gap:20px;">
+      <a href="index.html" style="color:var(--gold);">← الرئيسية</a>
+      <span style="color:rgba(255,255,255,0.3);">|</span>
+      <span>© 2024 الرواق للسفر</span>
+      <span style="color:rgba(255,255,255,0.3);">|</span>
+      <a href="contact.html" style="color:var(--gold);">تواصل معنا</a>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script src="js/programs.js"></script>
+</body>
+</html>

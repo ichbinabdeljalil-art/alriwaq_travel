@@ -1,334 +1,294 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0a3d62">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حاسبة برامج وكالة الأسفار</title>
-    
-    <!-- استدعاء خط Cairo للغة العربية -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- استدعاء مكتبة الأيقونات FontAwesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
-    <!-- استدعاء Tailwind CSS للتصميم -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- إعدادات ألوان مخصصة لـ Tailwind -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Cairo', 'sans-serif'],
-                    },
-                    colors: {
-                        primary: '#0284c7', // أزرق مريح
-                        secondary: '#0d9488', // أخضر مائل للأزرق
-                        accent: '#f59e0b', // برتقالي
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <style>
-        /* إخفاء أسهم الأرقام في حقول الإدخال */
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
-        }
-        input[type=number] {
-            -moz-appearance: textfield;
-        }
-        
-        /* تأثيرات حركية بسيطة */
-        .fade-in {
-            animation: fadeIn 0.4s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="وكالة الرواق للسفر - أفضل خيار لرحلات الحج والعمرة والسياحة بأسعار تنافسية وخدمة راقية">
+  <meta name="keywords" content="الرواق للسفر, حج, عمرة, سياحة, رحلات, المغرب">
+  <title>الرواق للسفر — وكالة أسفار احترافية</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 </head>
-const CACHE_NAME = "riwaq-cache-v1";
-const urlsToCache = [
-  "/alriwaq_travel/",
-  "/alriwaq_travel/index.html"
-];
+<body>
 
-self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
-  );
-});
+<!-- ══════════════════ PAGE LOADER ══════════════════ -->
+<div id="page-loader">
+  <div class="loader-content">
+    <div class="loader-logo">✈ الرواق</div>
+    <div class="loader-spinner"></div>
+  </div>
+</div>
 
-self.addEventListener("fetch", event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => response || fetch(event.request))
-  );
-});
-<body class="bg-gray-100 min-h-screen py-8 px-4 sm:px-6 lg:px-8 flex justify-center items-center">
+<!-- ══════════════════ NAVIGATION ══════════════════ -->
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
 
-    <div class="max-w-4xl w-full bg-white rounded-2xl shadow-xl overflow-hidden">
-        
-        <!-- الترويسة (Header) -->
-        <div class="bg-gradient-to-r from-primary to-secondary p-6 text-white text-center">
-            <i class="fa-solid fa-calculator text-4xl mb-3"></i>
-            <h1 class="text-3xl font-bold">حاسبة تكلفة البرنامج السياحي</h1>
-            <p class="text-white/80 mt-2 text-sm">حساب التكلفة بدقة شاملة هامش الخطأ (5%) وهامش الربح (20%)</p>
+    <a href="index.html" class="nav-logo">
+      <div class="logo-icon">ر</div>
+      <div class="logo-text">
+        <span class="logo-main">الرواق للسفر</span>
+        <span class="logo-sub">وكالة أسفار احترافية</span>
+      </div>
+    </a>
+
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html" class="active">الرئيسية</a></li>
+      <li><a href="programs.html">برامجنا</a></li>
+      <li><a href="videos.html">فيديوات</a></li>
+      <li><a href="branches.html">فروعنا</a></li>
+      <li><a href="contact.html" class="nav-cta">تواصل معنا</a></li>
+    </ul>
+
+    <button class="nav-toggle" id="nav-toggle" aria-label="القائمة">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+
+<!-- ══════════════════ HERO SLIDER ══════════════════ -->
+<section class="hero" id="home">
+  <div class="slider" id="hero-slider">
+
+    <!-- Slide 1 — Hajj & Umrah -->
+    <div class="slide slide-1 active">
+      <div class="slide-overlay"></div>
+      <div class="slide-pattern"></div>
+      <div class="slide-content">
+        <span class="slide-badge">✨ وكالة أسفار موثوقة منذ 10 سنوات</span>
+        <h1>رحلة العمر<br><span>تبدأ هنا</span></h1>
+        <p>أداء مناسك الحج والعمرة بخدمة راقية<br>وأسعار تنافسية لا مثيل لها</p>
+        <div class="slide-buttons">
+          <a href="programs.html" class="btn-primary">احجز رحلتك الآن</a>
+          <a href="#about" class="btn-outline">اكتشف المزيد</a>
         </div>
-
-        <div class="p-6 sm:p-8">
-            <form id="calculatorForm" onsubmit="event.preventDefault(); calculate();">
-                
-                <!-- رسالة الخطأ -->
-                <div id="errorMessage" class="hidden mb-6 bg-red-50 border-r-4 border-red-500 text-red-700 p-4 rounded-md fade-in flex items-center">
-                    <i class="fa-solid fa-triangle-exclamation text-xl ml-3"></i>
-                    <div>
-                        <p class="font-bold">تنبيه!</p>
-                        <p id="errorText" class="text-sm">عذراً، التسكين الخماسي مسموح فقط في فنادق 2 أو 3 نجوم.</p>
-                    </div>
-                </div>
-
-                <!-- قسم الفنادق -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    
-                    <!-- فندق المدينة -->
-                    <div class="bg-gray-50 p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                        <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                            <i class="fa-solid fa-hotel text-primary ml-2"></i> فندق المدينة
-                        </h2>
-                        
-                        <div class="mb-4">
-                            <label class="block text-sm font-semibold text-gray-600 mb-2">تصنيف الفندق (نجوم)</label>
-                            <select id="madinahStars" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" onchange="hideError()">
-                                <option value="2">⭐⭐ (نجمتين)</option>
-                                <option value="3" selected>⭐⭐⭐ (3 نجوم)</option>
-                                <option value="4">⭐⭐⭐⭐ (4 نجوم)</option>
-                                <option value="5">⭐⭐⭐⭐⭐ (5 نجوم)</option>
-                            </select>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-600 mb-2">عدد الأيام</label>
-                                <input type="number" id="madinahDays" min="0" placeholder="مثال: 4" value="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" oninput="hideError()">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-600 mb-2">سعر الليلة</label>
-                                <input type="number" id="madinahPrice" min="0" placeholder="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" oninput="hideError()">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- فندق مكة -->
-                    <div class="bg-gray-50 p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                        <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                            <i class="fa-solid fa-kaaba text-primary ml-2"></i> فندق مكة
-                        </h2>
-                        
-                        <div class="mb-4">
-                            <label class="block text-sm font-semibold text-gray-600 mb-2">تصنيف الفندق (نجوم)</label>
-                            <select id="makkahStars" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" onchange="hideError()">
-                                <option value="2">⭐⭐ (نجمتين)</option>
-                                <option value="3" selected>⭐⭐⭐ (3 نجوم)</option>
-                                <option value="4">⭐⭐⭐⭐ (4 نجوم)</option>
-                                <option value="5">⭐⭐⭐⭐⭐ (5 نجوم)</option>
-                            </select>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-600 mb-2">عدد الأيام</label>
-                                <input type="number" id="makkahDays" min="0" placeholder="مثال: 5" value="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" oninput="hideError()">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-600 mb-2">سعر الليلة</label>
-                                <input type="number" id="makkahPrice" min="0" placeholder="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" oninput="hideError()">
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- قسم الخدمات والتسكين -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    
-                    <!-- التأشيرة -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-800 mb-2 flex items-center">
-                            <i class="fa-solid fa-passport text-secondary ml-2"></i> سعر التأشيرة
-                        </label>
-                        <input type="number" id="visaPrice" min="0" placeholder="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary outline-none transition-all">
-                    </div>
-
-                    <!-- الطيران -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-800 mb-2 flex items-center">
-                            <i class="fa-solid fa-plane text-secondary ml-2"></i> سعر الطائرة
-                        </label>
-                        <input type="number" id="flightPrice" min="0" placeholder="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary outline-none transition-all">
-                    </div>
-
-                    <!-- نوع التسكين -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-800 mb-2 flex items-center">
-                            <i class="fa-solid fa-users text-secondary ml-2"></i> نوع التسكين
-                        </label>
-                        <select id="roomType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary outline-none transition-all" onchange="hideError()">
-                            <option value="2">ثنائي (شخصين)</option>
-                            <option value="3">ثلاثي (3 أشخاص)</option>
-                            <option value="4" selected>رباعي (4 أشخاص)</option>
-                            <option value="5">خماسي (5 أشخاص)</option>
-                        </select>
-                    </div>
-
-                </div>
-
-                <!-- أزرار التحكم -->
-                <div class="flex gap-4 border-t border-gray-200 pt-6">
-                    <button type="submit" class="flex-1 bg-primary hover:bg-sky-700 text-white font-bold py-3 px-4 rounded-xl transition-colors duration-200 flex justify-center items-center text-lg shadow-md">
-                        <i class="fa-solid fa-calculator ml-2"></i> احسب التكلفة النهائية
-                    </button>
-                    <button type="button" onclick="resetApp()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-6 rounded-xl transition-colors duration-200 flex justify-center items-center shadow-sm">
-                        <i class="fa-solid fa-rotate-right ml-2"></i> إعادة تعيين
-                    </button>
-                </div>
-            </form>
-
-            <!-- قسم النتائج (مخفي افتراضياً) -->
-            <div id="resultsSection" class="hidden mt-8 pt-8 border-t-2 border-dashed border-gray-200 fade-in">
-                <h3 class="text-2xl font-bold text-center text-gray-800 mb-6">تفاصيل التكلفة للفرد الواحد</h3>
-                
-                <!-- الصف الأول: التفاصيل الأساسية وهامش الخطأ -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    
-                    <!-- تكلفة الفنادق -->
-                    <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 text-center">
-                        <p class="text-sm text-gray-600 font-semibold mb-1">تكلفة الفنادق للفرد</p>
-                        <p class="text-xl font-bold text-blue-700" id="resHotelPP">0.00</p>
-                    </div>
-
-                    <!-- المجموع الأساسي -->
-                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-center">
-                        <p class="text-sm text-gray-600 font-semibold mb-1">التكلفة الأساسية (قبل الهوامش)</p>
-                        <p class="text-xl font-bold text-gray-700" id="resBaseTotal">0.00</p>
-                    </div>
-
-                    <!-- التكلفة مع هامش الخطأ -->
-                    <div class="bg-orange-50 border border-orange-200 rounded-xl p-4 text-center">
-                        <p class="text-sm text-orange-800 font-semibold mb-1">بعد إضافة هامش الخطأ (+5%)</p>
-                        <p class="text-xl font-bold text-orange-600" id="resWithErrorMargin">0.00</p>
-                    </div>
-
-                </div>
-
-                <!-- الصف الثاني: السعر النهائي مع الربح -->
-                <div class="bg-green-50 border-2 border-green-400 rounded-xl p-6 text-center shadow-lg relative overflow-hidden">
-                    <!-- أيقونة خلفية لتجميل البطاقة -->
-                    <i class="fa-solid fa-sack-dollar absolute -left-4 -top-4 text-green-200 text-8xl opacity-30 transform -rotate-12"></i>
-                    
-                    <div class="relative z-10">
-                        <p class="text-md text-green-800 font-bold mb-2">
-                            <i class="fa-solid fa-tags ml-1"></i> سعر البيع النهائي (شامل 20% ربح)
-                        </p>
-                        <p class="text-4xl font-black text-green-700 tracking-wide" id="resFinalSellingPrice">0.00</p>
-                        <p class="text-xs text-green-600 mt-2">السعر المحسوب = (التكلفة + 5% هامش خطأ) + 20% هامش ربح</p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
+      </div>
     </div>
 
-    <!-- كود الجافاسكربت -->
-    <script>
-        // دالة لتنسيق الأرقام بفاصلة للآلاف
-        const formatCurrency = (num) => {
-            return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        };
+    <!-- Slide 2 — Family & Tourism -->
+    <div class="slide slide-2">
+      <div class="slide-overlay"></div>
+      <div class="slide-pattern"></div>
+      <div class="slide-content">
+        <span class="slide-badge">🌍 برامج سياحية متنوعة طوال العام</span>
+        <h1>استمتع برحلاتك<br><span>مع الرواق</span></h1>
+        <p>برامج مصممة بعناية للأفراد والعائلات<br>بخيارات تناسب جميع الميزانيات</p>
+        <div class="slide-buttons">
+          <a href="programs.html" class="btn-primary">تصفح البرامج</a>
+          <a href="branches.html" class="btn-outline">فروعنا</a>
+        </div>
+      </div>
+    </div>
 
-        // إخفاء رسالة الخطأ عند تغيير أي مدخل
-        const hideError = () => {
-            document.getElementById('errorMessage').classList.add('hidden');
-        };
+    <!-- Slide 3 — Premium Service -->
+    <div class="slide slide-3">
+      <div class="slide-overlay"></div>
+      <div class="slide-pattern"></div>
+      <div class="slide-content">
+        <span class="slide-badge">🏆 خدمة متميزة على مدار الساعة</span>
+        <h1>نحن معك<br><span>في كل خطوة</span></h1>
+        <p>فريق محترف من المرشدين والمنظمين<br>يضمن لك رحلة لا تُنسى</p>
+        <div class="slide-buttons">
+          <a href="contact.html" class="btn-primary">تواصل معنا</a>
+          <a href="videos.html" class="btn-outline">شاهد تجاربنا</a>
+        </div>
+      </div>
+    </div>
 
-        // دالة الحساب الرئيسية
-        const calculate = () => {
-            // 1. جلب القيم من الحقول
-            const madinahStars = parseInt(document.getElementById('madinahStars').value);
-            const makkahStars = parseInt(document.getElementById('makkahStars').value);
-            const roomType = parseInt(document.getElementById('roomType').value);
-            
-            const madinahDays = parseFloat(document.getElementById('madinahDays').value) || 0;
-            const madinahPrice = parseFloat(document.getElementById('madinahPrice').value) || 0;
-            
-            const makkahDays = parseFloat(document.getElementById('makkahDays').value) || 0;
-            const makkahPrice = parseFloat(document.getElementById('makkahPrice').value) || 0;
-            
-            const visaPrice = parseFloat(document.getElementById('visaPrice').value) || 0;
-            const flightPrice = parseFloat(document.getElementById('flightPrice').value) || 0;
+    <!-- Slider dots -->
+    <div class="slider-nav">
+      <button class="slider-dot active" data-slide="0" aria-label="الشريحة 1"></button>
+      <button class="slider-dot" data-slide="1" aria-label="الشريحة 2"></button>
+      <button class="slider-dot" data-slide="2" aria-label="الشريحة 3"></button>
+    </div>
 
-            const errorDiv = document.getElementById('errorMessage');
-            const resultsDiv = document.getElementById('resultsSection');
+    <div class="scroll-indicator">اكتشف</div>
+  </div>
+</section>
 
-            // 2. التحقق من الشروط (Validation)
-            if (roomType === 5) {
-                if (madinahStars > 3 || makkahStars > 3) {
-                    errorDiv.classList.remove('hidden');
-                    resultsDiv.classList.add('hidden');
-                    errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    return; 
-                }
-            }
-            errorDiv.classList.add('hidden');
+<!-- ══════════════════ ABOUT ══════════════════ -->
+<section class="about-section" id="about">
+  <div class="container">
+    <div class="about-grid">
 
-            // 3. العمليات الحسابية
-            // إجمالي كل فندق
-            const totalMadinahCost = madinahPrice * madinahDays;
-            const totalMakkahCost = makkahPrice * makkahDays;
-            
-            // تكلفة الفنادق للفرد
-            const hotelCostPerPerson = (totalMadinahCost + totalMakkahCost) / roomType;
-            
-            // التكلفة الأساسية الإجمالية (بدون أي هوامش)
-            const baseTotal = hotelCostPerPerson + visaPrice + flightPrice;
-            
-            // إضافة 5% هامش خطأ (طوارئ)
-            const totalWithErrorMargin = baseTotal * 1.05; 
-            
-            // إضافة 20% هامش ربح على الإجمالي الجديد
-            const finalSellingPrice = totalWithErrorMargin * 1.20; 
+      <!-- Visual side -->
+      <div class="about-image animate-on-scroll">
+        <div class="about-image-icon">✈</div>
+        <div class="about-badge-floating">⭐ خبرة +10 سنوات</div>
+      </div>
 
-            // 4. عرض النتائج
-            document.getElementById('resHotelPP').innerText = formatCurrency(hotelCostPerPerson);
-            document.getElementById('resBaseTotal').innerText = formatCurrency(baseTotal);
-            document.getElementById('resWithErrorMargin').innerText = formatCurrency(totalWithErrorMargin);
-            document.getElementById('resFinalSellingPrice').innerText = formatCurrency(finalSellingPrice);
+      <!-- Text side -->
+      <div class="about-content animate-on-scroll delay-2">
+        <div class="section-header" style="text-align:right; margin-bottom:22px;">
+          <span class="section-badge">من نحن</span>
+          <h2 class="section-title">وكالة <span>الرواق للسفر</span></h2>
+          <div class="divider" style="margin-right:0; margin-left:auto;"></div>
+        </div>
+        <p class="about-text">
+          وكالة الرواق للسفر وكالة أسفار متخصصة في تنظيم رحلات الحج والعمرة والرحلات السياحية
+          داخل المغرب وخارجه. نعمل منذ سنوات على تقديم أعلى مستويات الخدمة لعملائنا الكرام.
+        </p>
+        <p class="about-text">
+          نتميز بتقديم باقات متنوعة تناسب مختلف الميزانيات والاحتياجات، مع ضمان الراحة
+          والسلامة في جميع مراحل الرحلة من الحجز حتى العودة.
+        </p>
+        <ul class="about-features">
+          <li>برامج حج وعمرة متكاملة على مدار السنة</li>
+          <li>فنادق بمختلف التصنيفات من 2 إلى 5 نجوم</li>
+          <li>نقل مريح من وإلى المطار في الموعد</li>
+          <li>مرشدون سياحيون متخصصون ومتمرسون</li>
+          <li>تأمين سفر شامل لراحة بالك الكامل</li>
+        </ul>
+        <a href="programs.html" class="btn-primary">استعرض برامجنا</a>
+      </div>
+    </div>
+  </div>
+</section>
 
-            // إظهار النتائج
-            resultsDiv.classList.remove('hidden');
-            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        };
+<!-- ══════════════════ STATS ══════════════════ -->
+<section class="stats-section">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-card animate-on-scroll">
+        <span class="stat-icon">👥</span>
+        <span class="stat-number" data-target="5000">0</span>
+        <span class="stat-label">عميل سعيد</span>
+      </div>
+      <div class="stat-card animate-on-scroll delay-1">
+        <span class="stat-icon">✈</span>
+        <span class="stat-number" data-target="500">0</span>
+        <span class="stat-label">رحلة ناجحة</span>
+      </div>
+      <div class="stat-card animate-on-scroll delay-2">
+        <span class="stat-icon">🌍</span>
+        <span class="stat-number" data-target="30">0</span>
+        <span class="stat-label">وجهة سياحية</span>
+      </div>
+      <div class="stat-card animate-on-scroll delay-3">
+        <span class="stat-icon">⭐</span>
+        <span class="stat-number" data-target="10">0</span>
+        <span class="stat-label">سنوات خبرة</span>
+      </div>
+    </div>
+  </div>
+</section>
 
-        // دالة إعادة التعيين (Reset)
-        const resetApp = () => {
-            document.getElementById('calculatorForm').reset();
-            document.getElementById('errorMessage').classList.add('hidden');
-            document.getElementById('resultsSection').classList.add('hidden');
-            
-            document.getElementById('madinahDays').value = 1;
-            document.getElementById('makkahDays').value = 1;
-            
-            document.getElementById('madinahDays').focus();
-        };
-    </script>
+<!-- ══════════════════ SERVICES ══════════════════ -->
+<section class="services-section">
+  <div class="container">
+    <div class="section-header animate-on-scroll">
+      <span class="section-badge">خدماتنا</span>
+      <h2 class="section-title">ما نقدمه <span>لكم</span></h2>
+      <div class="divider"></div>
+      <p class="section-subtitle">مجموعة متكاملة من خدمات السفر والسياحة لضمان رحلة مريحة وممتعة</p>
+    </div>
+
+    <div class="services-grid">
+      <div class="service-card animate-on-scroll">
+        <div class="service-icon">🕌</div>
+        <h3 class="service-title">حج وعمرة</h3>
+        <p class="service-text">برامج متكاملة لأداء مناسك الحج والعمرة بتسهيلات استثنائية وخدمة راقية طوال الرحلة</p>
+      </div>
+      <div class="service-card animate-on-scroll delay-1">
+        <div class="service-icon">🏨</div>
+        <h3 class="service-title">حجز فنادق</h3>
+        <p class="service-text">خيارات متنوعة من الفنادق بتصنيفات 2 إلى 5 نجوم تناسب ميزانيتك وتفضيلاتك</p>
+      </div>
+      <div class="service-card animate-on-scroll delay-2">
+        <div class="service-icon">✈️</div>
+        <h3 class="service-title">تذاكر طيران</h3>
+        <p class="service-text">حجز تذاكر الطيران بأفضل الأسعار على جميع الخطوط الجوية المحلية والدولية</p>
+      </div>
+      <div class="service-card animate-on-scroll">
+        <div class="service-icon">🚌</div>
+        <h3 class="service-title">النقل السياحي</h3>
+        <p class="service-text">خدمات نقل مريحة وآمنة من وإلى المطارات ومواقع السياحة في أحدث الحافلات</p>
+      </div>
+      <div class="service-card animate-on-scroll delay-1">
+        <div class="service-icon">👨‍👩‍👧‍👦</div>
+        <h3 class="service-title">رحلات عائلية</h3>
+        <p class="service-text">برامج سياحية خاصة للعائلات مع كل ما يحتاجه أفراد الأسرة من كبارها لصغارها</p>
+      </div>
+      <div class="service-card animate-on-scroll delay-2">
+        <div class="service-icon">📋</div>
+        <h3 class="service-title">تأشيرات ووثائق</h3>
+        <p class="service-text">مساعدة كاملة في استخراج التأشيرات وإعداد جميع الوثائق اللازمة للسفر بسلاسة</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ CTA ══════════════════ -->
+<section class="cta-section">
+  <div class="container animate-on-scroll">
+    <h2>🌟 ابدأ رحلتك معنا اليوم</h2>
+    <p>تواصل معنا الآن واحجز رحلتك بأفضل الأسعار وأعلى مستويات الخدمة</p>
+    <a href="contact.html" class="btn-dark">تواصل معنا الآن</a>
+  </div>
+</section>
+
+<!-- ══════════════════ FOOTER ══════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+
+      <div class="footer-brand">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+          <div class="logo-icon">ر</div>
+          <div class="logo-text">
+            <span class="logo-main" style="color:var(--gold);">الرواق للسفر</span>
+            <span class="logo-sub">وكالة أسفار احترافية</span>
+          </div>
+        </div>
+        <p>رفيقك الأمين في كل رحلة. نقدم أفضل برامج الحج والعمرة والسياحة بجودة عالية وأسعار منافسة.</p>
+        <div class="social-links">
+          <a href="#" class="social-link" title="فيسبوك">📘</a>
+          <a href="#" class="social-link" title="إنستغرام">📷</a>
+          <a href="#" class="social-link" title="يوتيوب">▶️</a>
+          <a href="https://wa.me/212662231352" class="social-link" title="واتساب">💬</a>
+        </div>
+      </div>
+
+      <div class="footer-column">
+        <h4>روابط سريعة</h4>
+        <ul class="footer-links">
+          <li><a href="index.html">الصفحة الرئيسية</a></li>
+          <li><a href="programs.html">برامجنا</a></li>
+          <li><a href="videos.html">فيديوات</a></li>
+          <li><a href="branches.html">فروعنا</a></li>
+          <li><a href="contact.html">تواصل معنا</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>برامجنا</h4>
+        <ul class="footer-links">
+          <li><a href="programs.html">رحلات الحج</a></li>
+          <li><a href="programs.html">رحلات العمرة</a></li>
+          <li><a href="programs.html">رحلات فردية</a></li>
+          <li><a href="programs.html">رحلات عائلية</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>تواصل معنا</h4>
+        <div class="footer-contact-item"><span>📞</span><span dir="ltr">+212 662 231 352</span></div>
+        <div class="footer-contact-item"><span>💬</span><span>واتساب متاح</span></div>
+        <div class="footer-contact-item"><span>🕒</span><span>السبت – الخميس: 9ص – 6م</span></div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2024 الرواق للسفر — جميع الحقوق محفوظة</span>
+      <span>صُمِّم بـ ❤️ للمسافرين</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
 </body>
 </html>
