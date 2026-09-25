@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>عمرة رمضان – وكالة الرواق</title>
+<style>
+  @font-face { font-family: "Amiri"; src: url("fonts/Amiri-Bold.ttf"); font-weight: 700; }
+  @font-face { font-family: "Amiri"; src: url("fonts/Amiri-Regular.ttf"); font-weight: 400; }
+  @font-face { font-family: "Cairo"; src: url("fonts/Cairo.ttf"); font-weight: 200 1000; }
+  @font-face { font-family: "Reem Kufi"; src: url("fonts/ReemKufi.ttf"); font-weight: 400 700; }
+
+  :root {
+    --gold: #f5c542;
+    --gold-2: #e0a526;
+    --navy: #06122b;
+    --teal: #0d9488;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--navy); }
+  #stage {
+    position: relative; width: 1080px; height: 1920px; overflow: hidden;
+    font-family: "Cairo", sans-serif; color: #fff;
+    background: radial-gradient(ellipse at 50% 30%, #123a6b 0%, #0a2248 45%, #06122b 100%);
+  }
+  canvas#stars { position: absolute; inset: 0; }
+  .layer { position: absolute; inset: 0; will-change: transform, opacity; }
+  .center { display: flex; flex-direction: column; align-items: center; text-align: center; }
+
+  /* Moon */
+  #moon { position: absolute; left: 640px; top: 180px; width: 260px; height: 260px; }
+
+  /* Lanterns */
+  .lantern { position: absolute; top: -10px; transform-origin: 50% 0; }
+
+  /* Skyline */
+  #skyline { position: absolute; left: 0; bottom: 0; width: 1080px; height: 980px; }
+
+  /* Text blocks */
+  .kicker { font-family: "Reem Kufi"; font-weight: 600; font-size: 54px; color: var(--gold); letter-spacing: 2px; }
+  .title  { font-family: "Amiri"; font-weight: 700; font-size: 190px; line-height: 1.15;
+            background: linear-gradient(180deg, #fff6d5 0%, var(--gold) 45%, var(--gold-2) 100%);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+            filter: drop-shadow(0 6px 18px rgba(245,197,66,.35)); }
+  .sub    { font-family: "Cairo"; font-weight: 700; font-size: 64px; color: #fff; line-height: 1.5;
+            text-shadow: 0 4px 20px rgba(0,0,0,.6); }
+  .ornament { width: 520px; height: 40px; margin: 26px 0; }
+
+  #s1 { top: 560px; }
+  #s2 { top: 470px; }
+  #s3 { top: 420px; }
+  #s4 { top: 470px; }
+
+  .brand { font-family: "Amiri"; font-weight: 700; font-size: 150px; color: var(--gold); line-height: 1.2;
+           text-shadow: 0 0 40px rgba(245,197,66,.45); }
+  .brand small { display: block; font-family: "Reem Kufi"; font-size: 52px; color: #fff; letter-spacing: 4px; margin-top: 4px; }
+
+  .phone-card {
+    margin-top: 40px; padding: 34px 60px; border-radius: 36px;
+    background: linear-gradient(135deg, rgba(245,197,66,.95), rgba(224,165,38,.95));
+    color: #0a1a3a; box-shadow: 0 20px 60px rgba(0,0,0,.45), 0 0 0 6px rgba(255,255,255,.15);
+    display: flex; align-items: center; gap: 28px; direction: ltr;
+  }
+  .phone-card .num { font-family: "Cairo"; font-weight: 900; font-size: 118px; letter-spacing: 4px; line-height: 1; }
+  .phone-card svg { width: 110px; height: 110px; flex: none; }
+
+  .cta-pill { margin-top: 44px; font-family: "Cairo"; font-weight: 800; font-size: 56px; padding: 18px 56px;
+              border-radius: 999px; background: var(--teal); color: #fff; box-shadow: 0 10px 30px rgba(13,148,136,.5); }
+
+  /* Persistent bottom bar */
+  #bar {
+    position: absolute; left: 60px; right: 60px; bottom: 70px; height: 150px; border-radius: 30px;
+    background: rgba(6,18,43,.78); border: 3px solid rgba(245,197,66,.8);
+    display: flex; align-items: center; justify-content: space-between; padding: 0 44px;
+    backdrop-filter: blur(6px);
+  }
+  #bar .b-name { font-family: "Amiri"; font-weight: 700; font-size: 62px; color: var(--gold); }
+  #bar .b-phone { direction: ltr; display: flex; align-items: center; gap: 16px;
+                  font-family: "Cairo"; font-weight: 900; font-size: 66px; color: #fff; letter-spacing: 2px; }
+  #bar .b-phone svg { width: 56px; height: 56px; }
+
+  #flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+  #vignette { position: absolute; inset: 0; pointer-events: none;
+              background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.55) 100%); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="stars" width="1080" height="1920"></canvas>
+
+  <!-- Crescent moon -->
+  <svg id="moon" viewBox="0 0 200 200">
+    <defs>
+      <radialGradient id="mg" cx="40%" cy="40%" r="70%">
+        <stop offset="0" stop-color="#fff8dc"/><stop offset="1" stop-color="#f5c542"/>
+      </radialGradient>
+      <mask id="cres"><rect width="200" height="200" fill="#fff"/><circle cx="128" cy="78" r="78" fill="#000"/></mask>
+      <filter id="glow"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <g filter="url(#glow)"><circle cx="100" cy="100" r="88" fill="url(#mg)" mask="url(#cres)"/></g>
+    <path d="M150 128 l6 16 17 1 -13 11 5 17 -15 -10 -15 10 5 -17 -13 -11 17 -1z" fill="#fff3c4" filter="url(#glow)"/>
+  </svg>
+
+  <!-- Lanterns -->
+  <div id="lanterns"></div>
+
+  <!-- Makkah skyline: clock tower, minarets, Kaaba -->
+  <svg id="skyline" viewBox="0 0 1080 980" preserveAspectRatio="xMidYMax meet">
+    <defs>
+      <linearGradient id="sk" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#0b1f45"/><stop offset="1" stop-color="#030a1c"/>
+      </linearGradient>
+      <linearGradient id="glowFloor" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#f5c542" stop-opacity=".0"/><stop offset="1" stop-color="#f5c542" stop-opacity=".22"/>
+      </linearGradient>
+    </defs>
+    <g fill="url(#sk)" transform="translate(0,240)">
+      <!-- Clock tower -->
+      <rect x="470" y="150" width="140" height="610"/>
+      <rect x="490" y="90" width="100" height="70"/>
+      <rect x="515" y="30" width="50" height="70"/>
+      <rect x="536" y="-20" width="8" height="60"/>
+      <!-- side towers -->
+      <rect x="360" y="330" width="110" height="430"/>
+      <rect x="610" y="330" width="110" height="430"/>
+      <rect x="250" y="440" width="110" height="320"/>
+      <rect x="720" y="440" width="110" height="320"/>
+      </g>
+      <g fill="url(#sk)" transform="translate(0,110)">
+      <!-- minarets -->
+      <g id="minarets">
+        <rect x="70" y="250" width="34" height="510"/><rect x="62" y="330" width="50" height="16"/><rect x="62" y="450" width="50" height="16"/>
+        <path d="M70 250 L87 170 L104 250z"/>
+        <rect x="160" y="300" width="30" height="460"/><rect x="153" y="370" width="44" height="14"/>
+        <path d="M160 300 L175 230 L190 300z"/>
+        <rect x="976" y="250" width="34" height="510"/><rect x="968" y="330" width="50" height="16"/><rect x="968" y="450" width="50" height="16"/>
+        <path d="M976 250 L993 170 L1010 250z"/>
+        <rect x="890" y="300" width="30" height="460"/><rect x="883" y="370" width="44" height="14"/>
+        <path d="M890 300 L905 230 L920 300z"/>
+      </g>
+      </g>
+    </g>
+    <!-- arcade + ground -->
+    <rect x="0" y="600" width="1080" height="380" fill="url(#sk)"/>
+    <g transform="translate(0,240)">
+    <!-- clock face -->
+    <circle cx="540" cy="215" r="44" fill="#f5c542" opacity=".9"/>
+    <circle cx="540" cy="215" r="36" fill="#fff7d6"/>
+    <path d="M540 215 L540 188 M540 215 L558 222" stroke="#0a1a3a" stroke-width="5" stroke-linecap="round"/>
+    <!-- lit windows -->
+    <g fill="#f5c542" opacity=".55">
+      <rect x="385" y="370" width="14" height="22"/><rect x="425" y="370" width="14" height="22"/>
+      <rect x="385" y="430" width="14" height="22"/><rect x="425" y="470" width="14" height="22"/>
+      <rect x="640" y="370" width="14" height="22"/><rect x="680" y="410" width="14" height="22"/>
+      <rect x="640" y="470" width="14" height="22"/><rect x="275" y="490" width="14" height="22"/>
+      <rect x="315" y="530" width="14" height="22"/><rect x="745" y="490" width="14" height="22"/>
+      <rect x="790" y="540" width="14" height="22"/><rect x="505" y="300" width="14" height="22"/>
+      <rect x="560" y="360" width="14" height="22"/><rect x="505" y="440" width="14" height="22"/>
+    </g>
+    </g>
+    <!-- arches -->
+    <g fill="#f5c542" opacity=".35">
+      <path d="M20 700 v-40 a25 25 0 0 1 50 0 v40z"/><path d="M100 700 v-40 a25 25 0 0 1 50 0 v40z"/>
+      <path d="M180 700 v-40 a25 25 0 0 1 50 0 v40z"/><path d="M850 700 v-40 a25 25 0 0 1 50 0 v40z"/>
+      <path d="M930 700 v-40 a25 25 0 0 1 50 0 v40z"/><path d="M1010 700 v-40 a25 25 0 0 1 50 0 v40z"/>
+    </g>
+    <!-- Kaaba -->
+    <g id="kaaba" transform="translate(540,640) scale(1.35) translate(-540,-640)">
+      <ellipse cx="540" cy="752" rx="330" ry="26" fill="url(#glowFloor)"/>
+      <polygon points="410,560 540,520 670,560 670,745 540,760 410,745" fill="#0b0b0f"/>
+      <polygon points="540,520 670,560 670,745 540,760" fill="#16161c"/>
+      <polygon points="410,590 540,550 670,590 670,615 540,578 410,615" fill="#d9a52b"/>
+      <polygon points="540,550 670,590 670,615 540,578" fill="#b98a1f"/>
+      <rect x="570" y="640" width="40" height="80" fill="#c9962a" transform="skewY(17) translate(0,-176)"/>
+    </g>
+    <rect x="0" y="0" width="1080" height="980" fill="url(#glowFloor)" opacity=".5"/>
+  </svg>
+
+  <!-- Scene 1: Ramadan Kareem -->
+  <div id="s1" class="layer center">
+    <div class="kicker">أهلاً وسهلاً بشهر الخير</div>
+    <div class="title">رمضان كريم</div>
+  </div>
+
+  <!-- Scene 2: Umrah Ramadan -->
+  <div id="s2" class="layer center">
+    <div class="kicker">رحلة العمر إلى بيت الله الحرام</div>
+    <svg class="ornament" viewBox="0 0 520 40"><path d="M0 20 H200 M320 20 H520" stroke="#f5c542" stroke-width="3"/><path d="M260 4 l16 16 -16 16 -16 -16z" fill="#f5c542"/><circle cx="220" cy="20" r="5" fill="#f5c542"/><circle cx="300" cy="20" r="5" fill="#f5c542"/></svg>
+    <div class="title" style="font-size:210px">عمرة رمضان</div>
+    <div class="sub" style="margin-top:10px">عمرة في رمضان تعدل حجة</div>
+  </div>
+
+  <!-- Scene 3: Agency welcome -->
+  <div id="s3" class="layer center">
+    <div class="sub" style="font-size:70px">مرحباً بكم مع</div>
+    <div class="brand">وكالة الرواق<small>للسياحة والأسفار</small></div>
+    <svg class="ornament" viewBox="0 0 520 40"><path d="M0 20 H200 M320 20 H520" stroke="#f5c542" stroke-width="3"/><path d="M260 4 l16 16 -16 16 -16 -16z" fill="#f5c542"/></svg>
+    <div class="sub">وكالة الرواق ترحب بكم<br>من أجل التسجيل في<br><span style="color:var(--gold)">عمرة رمضان</span></div>
+  </div>
+
+  <!-- Scene 4: Call to action -->
+  <div id="s4" class="layer center">
+    <div class="brand" style="font-size:120px">وكالة الرواق</div>
+    <div class="sub" style="margin-top:20px">تواصلوا معنا لمعرفة المزيد</div>
+    <div class="phone-card" id="phoneCard">
+      <svg viewBox="0 0 24 24"><path fill="#0a1a3a" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>
+      <div class="num">0662231352</div>
+    </div>
+    <div class="cta-pill" id="cta">سجّلوا الآن · الأماكن محدودة</div>
+  </div>
+
+  <!-- Persistent bar -->
+  <div id="bar">
+    <div class="b-name">وكالة الرواق</div>
+    <div class="b-phone">
+      <svg viewBox="0 0 24 24"><path fill="#f5c542" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>
+      <span>0662231352</span>
+    </div>
+  </div>
+
+  <div id="vignette"></div>
+  <div id="flash"></div>
+</div>
+
+<script>
+const DURATION = 30;
+const $ = id => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const easeOut = x => 1 - Math.pow(1 - clamp(x), 3);
+const easeInOut = x => { x = clamp(x); return x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2; };
+// opacity envelope: fade in over `fi`, hold, fade out over `fo`
+const env = (t, a, b, fi = .6, fo = .6) => clamp((t - a) / fi) * clamp((b - t) / fo);
+
+// --- deterministic star field ---
+let seed = 7;
+const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const stars = Array.from({ length: 220 }, () => ({
+  x: rnd() * 1080, y: rnd() * 1250, r: .6 + rnd() * 2.2, p: rnd() * 6.28, s: .8 + rnd() * 2.5
+}));
+const shooting = [{ t0: 2.2, x: 950, y: 120 }, { t0: 11.5, x: 800, y: 300 }, { t0: 19.8, x: 1000, y: 200 }];
+const ctx = $('stars').getContext('2d');
+function drawStars(t) {
+  ctx.clearRect(0, 0, 1080, 1920);
+  for (const s of stars) {
+    const a = .35 + .65 * (0.5 + 0.5 * Math.sin(t * s.s + s.p));
+    ctx.globalAlpha = a;
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 6.283); ctx.fill();
+  }
+  for (const sh of shooting) {
+    const k = (t - sh.t0) / 1.1;
+    if (k < 0 || k > 1) continue;
+    const x = sh.x - k * 600, y = sh.y + k * 330;
+    const g = ctx.createLinearGradient(x, y, x + 200, y - 110);
+    g.addColorStop(0, 'rgba(255,245,210,1)'); g.addColorStop(1, 'rgba(255,245,210,0)');
+    ctx.globalAlpha = Math.sin(k * Math.PI);
+    ctx.strokeStyle = g; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + 200, y - 110); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+}
+
+// --- lanterns ---
+const lanternSVG = (c) => `
+<svg width="120" height="360" viewBox="0 0 120 360">
+  <line x1="60" y1="0" x2="60" y2="150" stroke="#d9a52b" stroke-width="3"/>
+  <circle cx="60" cy="152" r="8" fill="none" stroke="#d9a52b" stroke-width="4"/>
+  <path d="M35 170 H85 L95 190 H25z" fill="#d9a52b"/>
+  <path d="M28 190 H92 L102 280 H18z" fill="${c}" opacity=".9"/>
+  <path d="M28 190 H92 L102 280 H18z" fill="none" stroke="#d9a52b" stroke-width="4"/>
+  <path d="M60 190 V280 M40 190 L32 280 M80 190 L88 280" stroke="#d9a52b" stroke-width="3"/>
+  <ellipse cx="60" cy="240" rx="18" ry="26" fill="#fff6c8" opacity=".9"/>
+  <path d="M18 280 H102 L85 300 H35z" fill="#d9a52b"/>
+  <path d="M50 300 H70 L60 330z" fill="#d9a52b"/>
+</svg>`;
+const lanterns = [
+  { x: 60,  len: 0,   c: '#c0392b', ph: 0,   s: .9, sc: .9 },
+  { x: 230, len: 90,  c: '#0d9488', ph: 1.3, s: 1.1, sc: .75 },
+  { x: 900, len: 40,  c: '#2c6fbb', ph: 2.1, s: 1.0, sc: .85 },
+];
+const lwrap = $('lanterns');
+lanterns.forEach((l, i) => {
+  const d = document.createElement('div');
+  d.className = 'lantern'; d.id = 'lan' + i;
+  d.style.left = l.x + 'px';
+  d.innerHTML = lanternSVG(l.c);
+  lwrap.appendChild(d);
+});
+
+function render(t) {
+  drawStars(t);
+
+  // camera: slow push-in
+  const zoom = 1 + t * 0.004;
+  $('stage').style.transform = '';
+  $('skyline').style.transform = `translateY(${(1 - easeOut(t / 3)) * 420}px) scale(${zoom})`;
+  $('skyline').style.transformOrigin = '50% 100%';
+  $('skyline').style.opacity = 1 - .55 * easeInOut((t - 20.6) / 1.2);
+
+  // moon rises & glows
+  const mr = easeOut(t / 3.5);
+  $('moon').style.transform = `translate(${(1 - mr) * 120}px, ${(1 - mr) * 220}px) rotate(${-10 + t * .6}deg) scale(${.85 + .15 * mr})`;
+  $('moon').style.opacity = mr;
+
+  // lanterns drop in and swing
+  lanterns.forEach((l, i) => {
+    const drop = easeOut((t - .3 - i * .25) / 1.6);
+    const sw = Math.sin(t * l.s * 1.6 + l.ph) * 6 * (1 - .5 * Math.min(1, t / 30));
+    $('lan' + i).style.transform = `translateY(${-420 + drop * (420 + l.len)}px) rotate(${sw}deg) scale(${l.sc})`;
+  });
+
+  // Scene 1: 0.8–6.2
+  {
+    const o = env(t, 0.8, 6.2, .9, .7);
+    const k = easeOut((t - .8) / 1.2);
+    $('s1').style.opacity = o;
+    $('s1').style.transform = `translateY(${(1 - k) * 60}px) scale(${.92 + .08 * k + (t > 5.5 ? (t - 5.5) * .05 : 0)})`;
+  }
+  // Scene 2: 6.2–13.2
+  {
+    const o = env(t, 6.2, 13.2, .8, .7);
+    const k = easeOut((t - 6.2) / 1.2);
+    $('s2').style.opacity = o;
+    $('s2').style.transform = `translateY(${(1 - k) * 80}px)`;
+    $('s2').style.letterSpacing = `${(1 - k) * 20}px`;
+  }
+  // Scene 3: 13.2–21
+  {
+    const o = env(t, 13.2, 21, .8, .7);
+    const k = easeOut((t - 13.2) / 1.3);
+    $('s3').style.opacity = o;
+    $('s3').style.transform = `scale(${.85 + .15 * k})`;
+    const sub = $('s3').children[3];
+    sub.style.opacity = easeOut((t - 14.6) / 1);
+    sub.style.transform = `translateY(${(1 - easeOut((t - 14.6) / 1)) * 40}px)`;
+  }
+  // Scene 4: 21–30 (CTA, stays to the end)
+  {
+    const o = env(t, 21, 99, .8, 1);
+    const k = easeOut((t - 21) / 1.2);
+    $('s4').style.opacity = o;
+    $('s4').style.transform = `translateY(${(1 - k) * 70}px)`;
+    const pk = easeOut((t - 22) / .9);
+    const pulse = 1 + .045 * Math.max(0, Math.sin((t - 23) * 4)) * (t > 23 ? 1 : 0);
+    $('phoneCard').style.transform = `scale(${(.6 + .4 * pk) * pulse})`;
+    $('phoneCard').style.opacity = pk;
+    const ck = easeOut((t - 23.2) / .8);
+    $('cta').style.opacity = ck;
+    $('cta').style.transform = `translateY(${(1 - ck) * 30}px)`;
+  }
+
+  // persistent bottom bar: in at 2.5s, hidden while big CTA card is shown? keep it — it reinforces the number
+  {
+    const k = easeOut((t - 2.5) / 1);
+    $('bar').style.opacity = k;
+    $('bar').style.transform = `translateY(${(1 - k) * 220}px)`;
+  }
+
+  // soft flashes on scene cuts
+  const cuts = [6.2, 13.2, 21];
+  let f = 0;
+  for (const c of cuts) f = Math.max(f, .35 * Math.exp(-Math.pow((t - c) / .18, 2)));
+  // fade from/to black at start/end
+  $('flash').style.background = '#000';
+  $('flash').style.opacity = Math.max(1 - clamp(t / .8), clamp((t - 29.3) / .7));
+  $('vignette').style.background = `radial-gradient(ellipse at center, rgba(255,240,200,${f}) 0%, transparent 55%, rgba(0,0,0,.55) 100%)`;
+}
+
+window.render = render;
+window.DURATION = DURATION;
+// live preview when opened in a browser
+if (!new URLSearchParams(location.search).has('capture')) {
+  const start = performance.now();
+  (function loop() {
+    const t = ((performance.now() - start) / 1000) % DURATION;
+    render(t);
+    requestAnimationFrame(loop);
+  })();
+} else {
+  render(0);
+}
+</script>
+</body>
+</html>
